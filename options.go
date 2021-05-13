@@ -2,39 +2,39 @@ package gorm
 
 import "time"
 
-type storeOption func(s *Store)
+type StoreOption func(s *Store)
 
-func WithTableName(tableName string) storeOption {
+func WithTableName(tableName string) StoreOption {
 	return func(s *Store) {
 		s.tableName = tableName
 	}
 }
 
-func WithGCInterval(gcInterval time.Duration) storeOption {
+func WithGCInterval(gcInterval time.Duration) StoreOption {
 	return func(s *Store) {
 		s.gcInterval = gcInterval
 	}
 }
 
-func WithGCDisabled() storeOption {
+func WithGCDisabled() StoreOption {
 	return func(s *Store) {
 		s.gcDisabled = true
 	}
 }
 
-func WithInitTableDisabled() storeOption {
+func WithInitTableDisabled() StoreOption {
 	return func(s *Store) {
 		s.initTableDisabled = true
 	}
 }
 
-func WithSecureDisabled() storeOption {
+func WithSecureDisabled() StoreOption {
 	return func(s *Store) {
 		s.secureDisabled = true
 	}
 }
 
-func WithKeyPairs(keyPairs ...[]byte) storeOption {
+func WithKeyPairs(keyPairs ...[]byte) StoreOption {
 	return func(s *Store) {
 		s.keyPairs = keyPairs
 	}

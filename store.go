@@ -37,7 +37,7 @@ type sessionItem struct {
 	CreatedAt time.Time
 }
 
-func NewStore(db *gorm.DB, options ...storeOption) *Store {
+func NewStore(db *gorm.DB, options ...StoreOption) *Store {
 	store := &Store{
 		db:         db,
 		tableName:  "sessions",
