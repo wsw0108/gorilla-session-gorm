@@ -3,6 +3,7 @@ package gorm
 import (
 	"encoding/base32"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -125,8 +126,12 @@ func (store *Store) New(r *http.Request, name string) (*sessions.Session, error)
 				return session, nil
 			}
 		} else {
-			if err := json.Unmarshal([]byte(item.Data), &session.Values); err != nil {
+			values := make(map[string]interface{})
+			if err := json.Unmarshal([]byte(item.Data), &values); err != nil {
 				return session, nil
+			}
+			for k, v := range values {
+				session.Values[k] = v
 			}
 		}
 		session.IsNew = false
@@ -151,7 +156,12 @@ func (store *Store) Save(r *http.Request, w http.ResponseWriter, session *sessio
 		data, err = securecookie.EncodeMulti(session.Name(), session.Values, store.codecs...)
 	} else {
 		var b []byte
-		b, err = json.Marshal(session.Values)
+		values := make(map[string]interface{})
+		for k, v := range session.Values {
+			kk := fmt.Sprint(k)
+			values[kk] = v
+		}
+		b, err = json.Marshal(values)
 		if err != nil {
 			return err
 		}

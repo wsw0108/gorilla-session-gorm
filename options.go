@@ -28,6 +28,7 @@ func WithInitTableDisabled() StoreOption {
 	}
 }
 
+// WithSecureDisabled encode session values as JSON, ONLY for development
 func WithSecureDisabled() StoreOption {
 	return func(s *Store) {
 		s.secureDisabled = true
