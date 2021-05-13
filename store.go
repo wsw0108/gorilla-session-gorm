@@ -114,11 +114,12 @@ func (store *Store) New(r *http.Request, name string) (*sessions.Session, error)
 	session.Options = &options
 	session.IsNew = true
 	if cookie, err := r.Cookie(name); err == nil {
-		if err := securecookie.DecodeMulti(name, cookie.Value, &session.ID, store.codecs...); err != nil {
+		var id string
+		if err := securecookie.DecodeMulti(name, cookie.Value, &id, store.codecs...); err != nil {
 			return session, nil
 		}
 		item := &sessionItem{}
-		if err := store.db.Where("id = ? AND expired_at > ?", session.ID, gorm.NowFunc()).First(item).Error; err != nil {
+		if err := store.db.Where("id = ? AND expired_at > ?", id, gorm.NowFunc()).First(item).Error; err != nil {
 			return session, nil
 		}
 		if !store.secureDisabled {
@@ -134,6 +135,7 @@ func (store *Store) New(r *http.Request, name string) (*sessions.Session, error)
 				session.Values[k] = v
 			}
 		}
+		session.ID = id
 		session.IsNew = false
 	}
 	return session, nil
@@ -178,6 +180,8 @@ func (store *Store) Save(r *http.Request, w http.ResponseWriter, session *sessio
 		session.ID = strings.TrimRight(
 			base32.StdEncoding.EncodeToString(
 				securecookie.GenerateRandomKey(32)), "=")
+	}
+	if session.IsNew {
 		item := &sessionItem{
 			ID:        session.ID,
 			Data:      data,
