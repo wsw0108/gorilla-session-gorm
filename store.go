@@ -191,6 +191,7 @@ func (store *Store) Save(r *http.Request, w http.ResponseWriter, session *sessio
 		if err = store.db.Create(item).Error; err != nil {
 			return err
 		}
+		session.IsNew = false
 	} else {
 		item := &sessionItem{
 			ID:        session.ID,
